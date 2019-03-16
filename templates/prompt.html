@@ -91,12 +91,9 @@
                                                                data-id="{{ t.id }}" type="submit"
                                                                value="edit">
                                                     </form>
-                                                    <!--<button class="id-button-prompt-edit" data-pid="{{ t.id }}"-->
-                                                            <!--type="submit">edit-->
-                                                    <!--</button>-->
                                                     <br>
                                                 </td>
-                                                <td>{{ t.title }}</td>
+                                                <td><a href="{{ url_for('prompt.detail', id=t.id) }}">{{ t.title }}</a></td>
                                                 <td>{{ t.description }}</td>
                                                 <td>{{ t.type }}</td>
                                                 <td>{{ t.play_beep }}</td>

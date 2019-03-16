@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<link rel="stylesheet" href="/static/css/pure-min.css">-->
+    <!--<script src="/static/js/jquery-3.0.0.min.js"></script>-->
+    <!--<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <title>Title</title>
+    <style type="text/css">
+        .todo-table {
+            margin: 0 auto;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .data-standard, .data-light {
+            margin-top: 15px;
+        }
+
+        .left {
+            float: left;
+        }
+
+        .right {
+            float: right;
+        }
+
+        data-standard {
+            text-align: center;
+        }
+
+        input:focus:invalid {
+            background-color: #F1F8FF;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<h2 class="center">当前prompt内容</h2>
+<a href={{ url_for('prompt.index') }}>
+    <div class="home">home
+    </div>
+</a>
+<table class="todo-table pure-table pure-table-horizontal">
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>title</th>
+        <th>description</th>
+        <th>type</th>
+        <th>play_beep</th>
+        <th>show_hmi</th>
+        <th>barge_in</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.title }}</td>
+        <td>{{ p.description }}</td>
+        <td>{{ p.type }}</td>
+        <td>{{ p.play_beep }}</td>
+        <td>{{ p.show_hmi }}</td>
+        <td>{{ p.barge_in }}</td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<div class="container-fluid content-container">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="todo-table pure-table pure-table-horizontal">
+                <thead>
+                <tr>
+                    <th>正式标准---data-standard</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th>action</th>
+                    <th>content</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <form action= {{ url_for('prompt.data_add') }} method='post'>
+                        <td><input type="submit" value="add"><br>
+                        <td><input type="hidden" name="id" value="{{ p.id }}" required></td>
+                        <td><input type="text" name="content" required></td>
+                    </form>
+                </tr>
+                {% for t in p.data %}
+                <tr>
+                    <td></td><br>
+                    <td>{{ t }}</td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
