@@ -81,7 +81,7 @@
                                             <tr class="p_{{ t.id }}">
                                                 <td>{{ t.id }}</td>
                                                 <td>
-                                                    <form class="prompt-delete" action={{ url_for("prompt.delete", id=t.id) }} method="post">
+                                                    <form class="prompt-delete" action={{ url_for("prompt.delete", title=t.title) }} method="get">
                                                         <input onclick="javascript:return del()" class="prompt-delete"
                                                                data-id="{{ t.id }}" type="submit"
                                                                value="delete">

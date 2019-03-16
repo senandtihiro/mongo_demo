@@ -22,8 +22,8 @@ def add():
 
 
 
-@main.route('/delete/<int:id>')
-def delete(id):
-    # print('666666666666666')
-    # prompts = []
+@main.route('/delete/<string:title>')
+def delete(title):
+    print('delete called')
+    mongodb['Prompt'].remove({'title': title})
     return redirect(url_for('.index'))

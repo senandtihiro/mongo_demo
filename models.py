@@ -12,11 +12,19 @@ class Model(object):
         r = u'\n<{0}:\n  {1}\n>'.format(class_name, u'\n  '.join(properties))
         return r
 
+    @classmethod
+    def get(cls, id):
+        """
+        很简单
+        """
+        return cls.find(id=id)
+
     def save(self):
         '''
         保存数据到 mongo
         '''
         name = self.__class__.__name__
+        print('debug self.__dict__:', self.__dict__)
         mongodb[name].save(self.__dict__)
 
 
@@ -30,10 +38,10 @@ class DataType(Model):
 
 
 class Prompt(Model):
-    id = 0
+    id = ''
     title = ''
     description = ''
-    type = 0
+    type = ''
     play_beep = False
     show_hmi = False
     barge_in = False
@@ -43,10 +51,9 @@ class Prompt(Model):
 
     def __init__(self, form):
         super(Prompt, self).__init__()
-        self.id = 0
         self.title = form.get('title')
         self.description = form.get('description')
-        self.type = form.get('type')
+        self.type = str(form.get('type'))
         self.play_beep = form.get('play_beep')
         self.show_hmi = form.get('show_hmi')
         self.barge_in = form.get('barge_in')
