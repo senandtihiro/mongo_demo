@@ -86,9 +86,14 @@
                                                                data-id="{{ t.id }}" type="submit"
                                                                value="delete">
                                                     </form>
-                                                    <button class="id-button-prompt-edit" data-pid="{{ t.id }}"
-                                                            type="submit">edit
-                                                    </button>
+                                                    <form class="prompt-edit" action={{ url_for("prompt.edit", id=t.id) }} method="get">
+                                                        <input class="prompt-edit"
+                                                               data-id="{{ t.id }}" type="submit"
+                                                               value="edit">
+                                                    </form>
+                                                    <!--<button class="id-button-prompt-edit" data-pid="{{ t.id }}"-->
+                                                            <!--type="submit">edit-->
+                                                    <!--</button>-->
                                                     <br>
                                                 </td>
                                                 <td>{{ t.title }}</td>
@@ -101,7 +106,6 @@
                                         {% endfor %}
                                         </tbody>
                                     </table>
-
     </div>
 
 </body>

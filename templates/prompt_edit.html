@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>edit prompt</title>
+</head>
+<body>
+    <div>
+        <table id="example" class="table">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>action</th>
+                    <th>title</th>
+                    <th>description</th>
+                    <th>type</th>
+                    <th>play_beep</th>
+                    <th>show_hmi</th>
+                    <th>barge_in</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <form action={{ url_for('prompt.modify') }} method='post'>
+                        <td><input type="hidden" name="id" value={{ prompt.id }}>{{ prompt.id }}</td>
+                        <td><input type="submit"></td>
+                        <td><input id="id-input-title" type="text" name="title" value="{{ prompt.title }}" required></td>
+                        <td><input type="text" name="description" value="{{ prompt.description }}"></td>
+                        <td>
+                            <input type="text" name="type" value="{{ prompt.type }}">
+                        </td>
+                        <td><select name="play_beep">
+                            <option value="True">是</option>
+                            <option value="False">否</option>
+                        </select></td>
+                        <td><select name="show_hmi">
+                            <option value="True">是</option>
+                            <option value="False">否</option>
+                        </select></td>
+                        <td><select name="barge_in">
+                            <option value="True">是</option>
+                            <option value="False">否</option>
+                        </select></td>
+                    </form>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
