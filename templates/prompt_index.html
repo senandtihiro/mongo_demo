@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/pure-min.css">
+    <script src="/static/js/jquery-3.0.0.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+<title>Title</title>
+    <style type="text/css">
+        .prompt-table {
+            margin: 0 auto;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #F1F8FF;
+        }
+
+        input:focus:invalid {
+          background-color: #F1F8FF;
+        }
+
+        body {
+            margin-top: 60px;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        .form-control {
+            margin-left: 150px;
+        }
+
+        .container {
+          padding-right: 5px;
+          padding-left: 5px;
+          margin-right: auto;
+          margin-left: auto;
+        }
+        @media (min-width: 768px) {
+          .container {
+            width: 750px;
+          }
+        }
+        @media (min-width: 992px) {
+          .container {
+            width: 970px;
+          }
+        }
+        @media (min-width: 1200px) {
+          .container {
+            width: 1170px;
+          }
+        }
+        .container-fluid {
+          padding-right: 5px;
+          padding-left: 5px;
+          margin-right: auto;
+          margin-left: auto;
+        }
+        img {
+            margin-left: 80px;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            font-family: cursive;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+
+        .wrapper1, .wrapper2 {
+            width: 100%;
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
+
+        .wrapper1 {
+            height: 20px;
+        }
+
+        .wrapper2 {
+        }
+
+        .div1 {
+            height: 20px;
+        }
+
+        .div2 {
+            overflow: none;
+        }
+        .fixed {
+            position: fixed;
+        }
+    </style>
+</head>
+<body>
+    <div onload="setDefaulTitle()">
+        <div class="">
+        <h1 class="center">prompt manage</h1>
+        <nav class="navbar navbar-inverse">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">项目选择：</a>
+            </div>
+            <div id="navbar-menu" class="collapse navbar-collapse">
+                <!--<ul class="nav navbar-nav">-->
+                <ul class="nav navbar-nav">
+                    {% for p in projects %}
+                        {% if p.id == project_id %}
+                            <li class="active"><a href={{ url_for('.index', project_id=p.id) }}>{{ p.name }}</a></li>
+                        {% else %}
+                            <li><a href={{ url_for('.index', project_id=p.id) }}>{{ p.name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+            <div id="content" class="row-fluid">
+                    <div>
+                        <div class="row">
+                            <form action={{ url_for(
+                            "prompt.search") }} method="post" name="prompt">
+                                <div class="col-md-4"><input class="form-control" type="text" placeholder="id" name="id"></div>
+                                <div class="col-md-4"><input class="form-control" type="text" id="id-search-by-title" placeholder="title" name="title"></div>
+                                <div class="col-md-2"><input class="btn btn-primary form-control" type="submit" value="Search" id="id-search"></div>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1"><input type="button" value="全选" class="btn btn-primary btn-all" id="all"></div>
+                            <div class="col-md-1"><input type="button" value="全不选" class="btn btn-primary btn-none" id="none"></div>
+                            <div class="col-md-1"><input type="button" value="反选" class="btn btn-primary btn-rev" id="rev"></div>
+                            <div class="col-md-1"><input type="button" value="删除选中" class="btn btn-primary btn-delete" id="getValue"></div>
+                            <div class="col-md-1"><input type="submit" value="导出选中" class="btn btn-primary btn-export" id="export"></div>
+                            <div class="col-md-1"><input type="submit" value="导出全部" class="btn btn-primary btn-export"></div>
+                            <div class="col-md-1"><input type="submit" value="选中导出为excel" class="btn btn-primary btn-export-xls"></div>
+                            <!--<input type="submit" value="更新发音tag后导出全部" class="btn-export-update-tag">-->
+                            <!--<input type="submit" value="点击获取更改tag的prompt title列表" class="btn-export-update-titles">-->
+                            <div class="col-md-1"><form style="display: inline; margin: 0; padding: 0;" action="{{ url_for('prompt.download_db_file') }}" method="post">
+                                <input type="hidden" name="path" value="prompt.sqlite">
+                                <input type="submit" value="导出sqlite" class="btn btn-primary">
+                            </form></div>
+                            <div class="col-md-1"><a class="btn btn-primary" href={{ url_for('project.index') }}>管理project</a></div>
+                            <div class="col-md-1"><a class="btn btn-primary" href={{ url_for('sqlquery.index') }}>自定义查询</a></div>
+                        </div>
+
+
+                            <div class="table-responsive">
+                                <div class="wrapper1">
+                                    <div class="div1"></div>
+                                </div>
+{#                                <div class="wrapper2">#}
+                                    <table id="example" class="table table-condensed table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>action</th>
+                                            <th>id</th>
+                                            <th>title</th>
+                                            <th>description</th>
+                                            <th>emotion</th>
+                                            <th>type</th>
+                                            <th>play_beep</th>
+                                            <th>show_hmi</th>
+                                            <th>can_omit</th>
+                                            <th>barge_in</th>
+                                            <th>play_async</th>
+                                            <th>private2user</th>
+                                            <th>show_indicate</th>
+                                            <th>domain</th>
+                                            <th>template_type</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <form class="prompt-add" action={{ url_for(
+            "prompt.add") }} method="post" name="prompt">
+                                                <td></td>
+                                                <!--<td><input class="pure-button pure-button-primary"-->
+                                                <td><input class="btn btn-primary"
+                                                           type="submit" value="Add" id="id-button-add"></td>
+                                                <td><input type="hidden" , name="project_id" , value={{ project_id }}>
+                                                </td>
+                                                <td><input id="id-input-title" type="text" name="title" required></td>
+                                                <td><input type="text" name="description"></td>
+                                                <td><select name="emotion">
+                                                    <option value="6">WONDERING</option>
+                                                    <option value="5">WAITING</option>
+                                                    <option value="4">STATING</option>
+                                                    <option value="2">REGRETING</option>
+                                                    <option value="1">HAPPY</option>
+                                                    <option value="3">WARNING</option>
+                                                </select></td>
+                                                <td>
+                                                    <select id="option-droup-demo" multiple="multiple">
+                                                        <option value="0">UNKNOWN</option>
+                                                        <option value="1">HELP</option>
+                                                        <option value="2">FEEDBACK</option>
+                                                        <option value="4">ERROR</option>
+                                                        <option value="8">WAITING</option>
+                                                        <option value="16">DONE</option>
+                                                        <option value="32">ASK</option>
+                                                        <option value="64">CONFIRM</option>
+                                                    </select>
+                                                    <input type="hidden" name="type" class="id-input-type"
+                                                           data-selected="">
+                                                </td>
+                                                <td><select name="play_beep">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="show_hmi">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="can_omit">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="barge_in">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="play_async">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="private2user">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="show_indicate">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="domain">
+                                                    <option value="SMS">SMS</option>
+                                                    <option value="Navi">Navi</option>
+                                                    <option value="System">System</option>
+                                                    <option value="Phone">Phone</option>
+                                                    <option value="Vehicle">Vehicle</option>
+                                                    <option value="Dlg">Dlg</option>
+                                                    <option value="Tbox">Tbox</option>
+                                                    <option value="VoicePrint">VoicePrint</option>
+                                                    <option value="Reminder">Reminder</option>
+                                                    <option value="Global">Global</option>
+                                                    <option value="Radio">Radio</option>
+                                                    <option value="Setting">Setting</option>
+                                                    <option value="Media">Media</option>
+                                                    <option value="Stock">Stock</option>
+                                                    <option value="Carplay">Carplay</option>
+                                                    <option value="AC">AC</option>
+                                                    <option value="Traffic">Traffic</option>
+                                                    <option value="BT">BT</option>
+                                                    <option value="TBox">TBox</option>
+                                                    <option value="Weather">Weather</option>
+                                                    <option value="Carlife">Carlife</option>
+                                                    <option value="OnStar">OnStar</option>
+                                                    <option value="Interact">Interact</option>
+                                                    <option value="Proactive Interaction">Proactive Interaction</option>
+                                                    <option value="Proactive Interaction">Camera</option>
+                                                </select></td>
+                                                <td><input type="text" name="template_type"></td>
+                                            </form>
+                                        </tr>
+
+                                        {% for t in prompts %}
+                                            <tr class="p_{{ t.id }}">
+                                                <td><input type="checkbox" value={{ t.id }}></td>
+                                                <td>
+                                                    <form class="prompt-delete" data-ids="{{ t.id }}" action={{ url_for(
+        "prompt.delete") }} method="post">
+                                                        <input type="hidden" name="ids" value="{{ t.id }}">
+                                                        <input type="hidden" name="project_id" value="{{ project_id }}">
+                                                        <input onclick="javascript:return del()" class="prompt-delete"
+                                                               data-id="{{ t.id }}" type="submit"
+                                                               value="delete">
+                                                    </form>
+                                                    <button class="id-button-prompt-edit" data-pid="{{ t.id }}"
+                                                            type="submit">edit
+                                                    </button>
+                                                    <br>
+                                                    <a href={{ url_for('content.index', pid=t.id, project_id=project_id) }}>content</a><br>
+                                                    <a href={{ url_for('replace.index', pid=t.id) }}>replace</a><br>
+                                                    <a href={{ url_for('action_history.index', pid=t.id) }}>操作记录</a>
+                                                </td>
+                                                <td>{{ t.id }}</td>
+                                                <td>{{ t.title }}</td>
+                                                <td>{{ t.description }}</td>
+                                                <td>{{ t.emotion }}</td>
+                                                <td>{{ t.type }}</td>
+                                                <td>{{ t.play_beep }}</td>
+                                                <td>{{ t.show_hmi }}</td>
+                                                <td>{{ t.can_omit }}</td>
+                                                <td>{{ t.barge_in }}</td>
+                                                <td>{{ t.play_async }}</td>
+                                                <td>{{ t.private2user }}</td>
+                                                <td>{{ t.show_indicate }}</td>
+                                                <td>{{ t.domain }}</td>
+                                                <td>{{ t.template_type }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+{#                                </div>#}
+                            </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+
+
+
+<script>
+    let log = console.log.bind(console)
+
+    let e = sel => document.querySelector(sel)
+
+    var setDefaulTitle = function () {
+        if( localStorage.title != null ){
+            $('#id-input-title').val(localStorage.title)
+        }
+    }
+
+    var show_current_project = () => {
+        var tabs = e('ul')
+        tabs.addEventListener('click', function(event){
+            var self = event.target
+            var active_ele = e('.active').closest('li')
+            log('active_ele', active_ele)
+            active_ele.classList.remove('active')
+            self.closest('li').classList.add('active')
+            log('self', self)
+        })
+    }
+
+    var __main = () => {
+        show_current_project()
+        setDefaulTitle()
+    }
+
+    __main()
+
+{#    设置上下滚动条 #}
+    $(function () {
+        $('.wrapper1').on('scroll', function (e) {
+            $('.wrapper2').scrollLeft($('.wrapper1').scrollLeft());
+        });
+        $('.wrapper2').on('scroll', function (e) {
+            $('.wrapper1').scrollLeft($('.wrapper2').scrollLeft());
+        });
+    });
+    $(window).on('load', function (e) {
+        $('.div1').width($('table').width());
+        $('.div2').width($('table').width());
+    });
+
+
+    var createOptions = function(){
+        $.post("/project/list_names", {}, function (data) {
+            var data = data.split(',')
+            var project_options = document.querySelector('#option-droup-project')
+            for(var i=0; i<data.length; i++){
+                option_html = `<option value="${ data[i] }">${ data[i] }</option>`
+                project_options.insertAdjacentHTML('beforeEnd', option_html)
+            }
+            $('#option-droup-project').multiselect({
+                selectAllValue: 'multiselect-all',
+                enableCaseInsensitiveFiltering: true,
+                enableFiltering: true,
+                maxHeight: '300',
+                buttonWidth: '235',
+                minimumCountSelected: 1,
+                onChange: function(option, selected) {
+                    var brands = $('#option-droup-project option:selected');
+                    var res = []
+                    $(brands).each(function(index, brand){
+                        v = $(this).val()
+                        res.push(v)
+                    });
+                    var project = document.querySelector('.input-project')
+                    project.value = res
+                }
+            });
+        });
+    }
+
+
+
+    get_input_title=function(){
+            var title = $('#id-search-by-title').val()
+            document.querySelector('#id-input-title').defaultValue = title;
+    };
+
+
+    $(document).ready(function() {
+        $('#option-droup-demo').multiselect({
+            selectAllValue: 'multiselect-all',
+            enableCaseInsensitiveFiltering: true,
+            enableFiltering: true,
+            maxHeight: '300',
+            buttonWidth: '235',
+            minimumCountSelected: 1,
+            onChange: function(option, selected) {
+                var brands = $('#option-droup-demo option:selected');
+                var res = 0
+                selected_list = []
+                $(brands).each(function(index, brand){
+                    v = parseInt($(this).val())
+                    selected = $(this).text()
+                    selected_list.push(selected)
+                    res |= v
+                });
+                var type = document.querySelector('.id-input-type')
+                type.value = res
+            }
+        });
+    });
+
+    var setInput = function (sel, content) {
+        var td = sel.querySelector('input')
+        td.value = content
+    }
+    var getInput = function (sel) {
+        var td = sel.querySelector('input')
+        return td.value
+    }
+
+    var getSelect = function (sel) {
+        var td = sel.querySelector('select')
+        return td.value
+    }
+
+    var setSelect = function (sel, content) {
+        var td = sel.querySelector('select')
+        td.value = {
+            'True': '是',
+            'False': '否'
+        }[content]
+    }
+
+    var setSelectDomain = function (sel, content) {
+        var td = sel.querySelector('select')
+        td.value = content
+    }
+
+    var selectValue = function () {
+        var allInputs = document.querySelectorAll('tr')
+        var valArr = []
+        for(var i = 2; i < allInputs.length; i++){
+            var input = allInputs[i].querySelector('td > input')
+            if (input.type === 'checkbox' && input.checked){
+                input.checked = false
+                val = input.value
+                valArr.push(val)
+            }
+        }
+
+        return valArr
+    }
+
+    $(function () {
+        $("#all").click(function () {
+            var allInputs = document.querySelectorAll('tr')
+            log('allInputs:', allInputs)
+            for(var i = 2; i < allInputs.length; i++){
+                var input = allInputs[i].querySelector('td > input')
+                if (input.type === 'checkbox'){
+                    input.checked = true
+                }
+            }
+        })
+
+        $("#none").click(function () {
+            var allInputs = document.querySelectorAll('tr')
+            for(var i = 2; i < allInputs.length; i++){
+                var input = allInputs[i].querySelector('td > input')
+                if (input.type === 'checkbox'){
+                    input.checked = false
+                }
+            }
+        })
+
+        $("#rev").click(function () {
+            var allInputs = document.querySelectorAll('tr')
+            for(var i = 2; i < allInputs.length; i++){
+                var input = allInputs[i].querySelector('td > input')
+                if (input.type === 'checkbox'){
+                    input.checked = !(input.checked)
+                }
+            }
+        })
+
+
+
+        $("#getValue").click(function () {
+            _data = selectValue()
+            if(del()){
+                $.ajax({
+                type: "POST",
+                url: "/prompt/delete",
+                cache: false,
+                data : {
+                    ids: _data,
+                    project_id: project_id
+                },
+                success: function (response) {
+                    for (var i = 0; i < _data.length; i++) {
+                        tr = document.querySelector('.p_' + data[i])
+                        tr.remove()
+                    }
+
+                }
+                });
+            }
+
+        });
+
+        $('#id-search-by-title').blur(function () {
+            localStorage.title = this.value
+        })
+
+        $(".btn-export").click(function () {
+            data = selectValue()
+            args = {
+                'ids': data
+            }
+            var xhr = new XMLHttpRequest();
+            url = '/prompt/export_selected'
+
+            xhr.open('POST', url, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                if (this.status === 200) {
+                    var filename = "";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+                    var type = xhr.getResponseHeader('Content-Type');
+
+                    var blob = typeof File === 'function'
+                        ? new File([this.response], filename, {type: type})
+                        : new Blob([this.response], {type: type});
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var URL = window.URL || window.webkitURL;
+                        var downloadUrl = URL.createObjectURL(blob);
+
+                        if (filename) {
+                            var a = document.createElement("a");
+                            if (typeof a.download === 'undefined') {
+                                window.location = downloadUrl;
+                            } else {
+                                a.href = downloadUrl;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                            }
+                        } else {
+                            window.location = downloadUrl;
+                        }
+
+                        setTimeout(function () {
+                            URL.revokeObjectURL(downloadUrl);
+                        }, 100); // cleanup
+                    }
+                }
+            };
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send($.param(args));
+        });
+
+        $(".btn-export-xls").click(function () {
+            data = selectValue()
+            args = {
+                'ids': data
+            }
+            var xhr = new XMLHttpRequest();
+            url = '/prompt/export_selected_xls'
+
+            xhr.open('POST', url, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                if (this.status === 200) {
+                    var filename = "";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+                    var type = xhr.getResponseHeader('Content-Type');
+
+                    var blob = typeof File === 'function'
+                        ? new File([this.response], filename, {type: type})
+                        : new Blob([this.response], {type: type});
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var URL = window.URL || window.webkitURL;
+                        var downloadUrl = URL.createObjectURL(blob);
+
+                        if (filename) {
+                            var a = document.createElement("a");
+                            if (typeof a.download === 'undefined') {
+                                window.location = downloadUrl;
+                            } else {
+                                a.href = downloadUrl;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                            }
+                        } else {
+                            window.location = downloadUrl;
+                        }
+
+                        setTimeout(function () {
+                            URL.revokeObjectURL(downloadUrl);
+                        }, 100); // cleanup
+                    }
+                }
+            };
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send($.param(args));
+        });
+
+        $(".btn-export-update-tag").click(function () {
+            data = selectValue()
+            args = {
+                'ids': data
+            }
+            var xhr = new XMLHttpRequest();
+            url = '/prompt/update_tts_pronunciation_tag'
+
+            xhr.open('POST', url, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                if (this.status === 200) {
+                    var filename = "";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+                    var type = xhr.getResponseHeader('Content-Type');
+
+                    var blob = typeof File === 'function'
+                        ? new File([this.response], filename, {type: type})
+                        : new Blob([this.response], {type: type});
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var URL = window.URL || window.webkitURL;
+                        var downloadUrl = URL.createObjectURL(blob);
+
+                        if (filename) {
+                            var a = document.createElement("a");
+                            if (typeof a.download === 'undefined') {
+                                window.location = downloadUrl;
+                            } else {
+                                a.href = downloadUrl;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                            }
+                        } else {
+                            window.location = downloadUrl;
+                        }
+
+                        setTimeout(function () {
+                            URL.revokeObjectURL(downloadUrl);
+                        }, 100); // cleanup
+                    }
+                }
+            };
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send($.param(args));
+        });
+
+        $(".btn-export-update-titles").click(function () {
+            data = selectValue()
+            args = {
+                'ids': data
+            }
+            var xhr = new XMLHttpRequest();
+            url = '/prompt/export_changed_prompt_title_list'
+
+            xhr.open('POST', url, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                if (this.status === 200) {
+                    var filename = "";
+                    var disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+                    var type = xhr.getResponseHeader('Content-Type');
+
+                    var blob = typeof File === 'function'
+                        ? new File([this.response], filename, {type: type})
+                        : new Blob([this.response], {type: type});
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var URL = window.URL || window.webkitURL;
+                        var downloadUrl = URL.createObjectURL(blob);
+
+                        if (filename) {
+                            var a = document.createElement("a");
+                            if (typeof a.download === 'undefined') {
+                                window.location = downloadUrl;
+                            } else {
+                                a.href = downloadUrl;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                            }
+                        } else {
+                            window.location = downloadUrl;
+                        }
+
+                        setTimeout(function () {
+                            URL.revokeObjectURL(downloadUrl);
+                        }, 100); // cleanup
+                    }
+                }
+            };
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send($.param(args));
+        });
+
+        $("input[type=checkbox]").click(function () {
+            if ($(this).attr('checked') == 'checked') {
+                $(this).attr('checked', false)
+            } else {
+                $(this).attr('checked', true)
+            }
+        })
+    })
+
+        $(document).on('click', '.id-button-prompt-edit', function () {
+        var self = event.target
+        var project_id = {{ project_id }}
+        var tr = self.closest('tr')
+        var pid = tr.children[2].innerText
+        var title = tr.children[3].innerText
+        var description = tr.children[4].innerText
+        var emotion = tr.children[5].innerText
+        var type = tr.children[6].innerText
+        var play_beep = tr.children[7].innerText
+        var show_hmi = tr.children[8].innerText
+        var can_omit = tr.children[9].innerText
+        var barge_in = tr.children[10].innerText
+        var play_async = tr.children[11].innerText
+        var private2user = tr.children[12].innerText
+        var show_indicate = tr.children[13].innerText
+        var domain = tr.children[14].innerText
+        var template_type = tr.children[15].innerText
+        if (self.innerText == 'edit') {
+            self.innerText = 'save'
+            tr.children[3].innerHTML = '<input type="text" name="title" required>'
+            setInput(tr.children[3], title)
+            tr.children[4].innerHTML = '<input type="text" name="description">'
+            setInput(tr.children[4], description)
+            tr.children[5].innerHTML = '<input type="text" name="emotion">'
+            setInput(tr.children[5], emotion)
+            tr.children[6].innerHTML = '<input type="text" name="type" required>'
+            setInput(tr.children[6], type)
+            tr.children[7].innerHTML = '<select name="play_beep">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[7], play_beep)
+            tr.children[8].innerHTML = '<select name="show_hmi">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[8], show_hmi)
+            tr.children[9].innerHTML = '<select name="can_omit">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[9], can_omit)
+            tr.children[10].innerHTML = '<select name="barge_in">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[10], barge_in)
+            tr.children[11].innerHTML = '<select name="play_async">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[11], play_async)
+            tr.children[12].innerHTML = '<select name="private2user">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[12], private2user)
+            tr.children[13].innerHTML = '<select name="show_indicate">\n' +
+                '            <option value="是">是</option>\n' +
+                '            <option value="否">否</option>\n' +
+                '            </select>'
+            setSelect(tr.children[13], show_indicate)
+            tr.children[14].innerHTML = '<select name="domain">\n' +
+                '<option value="SMS">SMS</option>\n' +
+                '<option value="Navi">Navi</option>\n' +
+                '<option value="System">System</option>\n' +
+                '<option value="Phone">Phone</option>\n' +
+                '<option value="Vehicle">Vehicle</option>\n' +
+                '<option value="Dlg">Dlg</option>\n' +
+                '<option value="Tbox">Tbox</option>\n' +
+                '<option value="VoicePrint">VoicePrint</option>\n' +
+                '<option value="Reminder">Reminder</option>\n' +
+                '<option value="Global">Global</option>\n' +
+                '<option value="Radio">Radio</option>\n' +
+                '<option value="Setting">Setting</option>\n' +
+                '<option value="Media">Media</option>\n' +
+                '<option value="Stock">Stock</option>\n' +
+                '<option value="Carplay">Carplay</option>\n' +
+                '<option value="AC">AC</option>\n' +
+                '<option value="Traffic">Traffic</option>\n' +
+                '<option value="BT">BT</option>\n' +
+                '<option value="TBox">TBox</option>\n' +
+                '<option value="Weather">Weather</option>\n' +
+                '<option value="Carlife">Carlife</option>\n' +
+                '<option value="OnStar">OnStar</option>\n' +
+                '<option value="Interact">Interact</option>\n' +
+                '<option value="Proactive Interaction">Proactive Interaction</option>\n' +
+            '</select>'
+            setSelectDomain(tr.children[14], domain)
+            tr.children[15].innerHTML = '<input type="text" name="template_type">'
+            setInput(tr.children[15], template_type)
+        } else {
+            //请求后端接口
+            title = getInput(tr.children[3])
+            description = getInput(tr.children[4])
+            emotion = getInput(tr.children[5])
+            type = getInput(tr.children[6])
+            play_beep = getSelect(tr.children[7])
+            show_hmi = getSelect(tr.children[8])
+            can_omit = getSelect(tr.children[9])
+            barge_in = getSelect(tr.children[10])
+            play_async = getSelect(tr.children[11])
+            private2user = getSelect(tr.children[12])
+            show_indicate = getSelect(tr.children[13])
+            domain = getSelect(tr.children[14])
+            template_type = getInput(tr.children[15])
+            if (title.length == 0 || type.length == 0){
+                alert('title and type can not be null')
+            }else {
+                self.innerText = 'edit'
+                args = {
+                    'id': pid,
+                    'title': title,
+                    'description': description,
+                    'emotion': emotion,
+                    'type': type,
+                    'play_beep': play_beep,
+                    'can_omit': can_omit,
+                    'show_hmi': show_hmi,
+                    'barge_in': barge_in,
+                    'play_async': play_async,
+                    'private2user': private2user,
+                    'show_indicate': show_indicate,
+                    'domain': domain,
+                    'template_type': template_type,
+                    'project_id': project_id,
+                }
+                log('debug args:', args)
+                $.ajax({
+                    type: "POST",
+                    url: "/prompt/edit",
+                    cache: false,
+                    data: args,
+                    success: function (response) {
+                        tr.children[3].innerHTML = title
+                        tr.children[4].innerHTML = description
+                        tr.children[5].innerHTML = emotion
+                        tr.children[6].innerHTML = type
+                        tr.children[7].innerHTML = handleCN(play_beep)
+                        tr.children[8].innerHTML = handleCN(show_hmi)
+                        tr.children[9].innerHTML = handleCN(can_omit)
+                        tr.children[10].innerHTML = handleCN(barge_in)
+                        tr.children[11].innerHTML = handleCN(play_async)
+                        tr.children[12].innerHTML = handleCN(private2user)
+                        tr.children[13].innerHTML = handleCN(show_indicate)
+                        tr.children[14].innerHTML = domain
+                        tr.children[15].innerHTML = template_type
+                    }
+                });
+            }
+        }
+    })
+
+    var handleCN = function (cn) {
+        if(cn == null || cn == ''){
+            return 'None'
+        } else {
+            return {
+                '是': 'True',
+                '否': 'False'
+            }[cn]
+        }
+    }
+
+
+    function del() {
+        var msg = "您真的确定要删除吗？\n\n请确认！";
+        if (confirm(msg) == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+</script>
+</html>

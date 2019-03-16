@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>prompts</title>
+    <style type="text/css">
+        .prompt-table {
+            margin: 0 auto;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #F1F8FF;
+        }
+
+        input:focus:invalid {
+          background-color: #F1F8FF;
+        }
+
+        body {
+            margin-top: 60px;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        .form-control {
+            margin-left: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <table id="example" class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>id</th>
+                                            <th>action</th>
+                                            <th>title</th>
+                                            <th>description</th>
+                                            <th>type</th>
+                                            <th>play_beep</th>
+                                            <th>show_hmi</th>
+                                            <th>barge_in</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <form class="prompt-add" action={{ url_for(
+            "prompt.add") }} method="post" name="prompt">
+                                                <td></td>
+                                                <!--<td><input class="pure-button pure-button-primary"-->
+                                                <td><input class="btn btn-primary"
+                                                           type="submit" value="Add" id="id-button-add"></td>
+                                                </td>
+                                                <td><input id="id-input-title" type="text" name="title" required></td>
+                                                <td><input type="text" name="description"></td>
+                                                <td>
+                                                    <input type="text" name="type" class="id-input-type">
+                                                </td>
+                                                <td><select name="play_beep">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="show_hmi">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                                <td><select name="barge_in">
+                                                    <option value="True">是</option>
+                                                    <option value="False">否</option>
+                                                </select></td>
+                                            </form>
+                                        </tr>
+
+                                        {% for t in prompts %}
+                                            <tr class="p_{{ t.id }}">
+                                                <td>{{ t.id }}</td>
+                                                <td>
+                                                    <form class="prompt-delete" action={{ url_for("prompt.delete", id=t.id) }} method="post">
+                                                        <input onclick="javascript:return del()" class="prompt-delete"
+                                                               data-id="{{ t.id }}" type="submit"
+                                                               value="delete">
+                                                    </form>
+                                                    <button class="id-button-prompt-edit" data-pid="{{ t.id }}"
+                                                            type="submit">edit
+                                                    </button>
+                                                    <br>
+                                                </td>
+                                                <td>{{ t.title }}</td>
+                                                <td>{{ t.description }}</td>
+                                                <td>{{ t.type }}</td>
+                                                <td>{{ t.play_beep }}</td>
+                                                <td>{{ t.show_hmi }}</td>
+                                                <td>{{ t.barge_in }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+    </div>
+
+</body>
+</html>
